@@ -1,0 +1,2 @@
+# 允许未使用的变量
+allow_unused_variables = true

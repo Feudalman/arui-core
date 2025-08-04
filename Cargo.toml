@@ -1,0 +1,12 @@
+[package]
+name = "arui-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+thiserror = "2.0.12"
+derive_builder = "0.20.2"
+
+[dependencies.uuid]
+version = "1.16.0"
+features = ["v4"]
