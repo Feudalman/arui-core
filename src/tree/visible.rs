@@ -1,8 +1,8 @@
-/// 目录树可视化实现
-/// 该模块主要针对树结构实现可视化接口，而不额外封装任何导出结构
-use std::fmt::{Display, Formatter};
+//! # 项目树可视化实现
+//! 该模块主要针对树结构实现可视化接口，而不额外封装任何导出结构
 use crate::tree::node::TreeNode;
 use crate::tree::root::ProjectTree;
+use std::fmt::{Display, Formatter};
 
 // --------------------- visible trait ---------------------
 
@@ -58,8 +58,14 @@ impl ProjectTreeVisible for ProjectTree {
 impl Display for ProjectTree {
     // TODO：优化一下
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "ProjectTree {{\n\tID: {},\n\tValid: {},\n\tName: {},\n\tPath: {}\n}}",
-               self.id, self.is_valid(), self.name, self.path)
+        write!(
+            f,
+            "ProjectTree {{\n\tID: {},\n\tValid: {},\n\tName: {},\n\tPath: {}\n}}",
+            self.id,
+            self.is_valid(),
+            self.name,
+            self.path
+        )
     }
 }
 
