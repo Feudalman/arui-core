@@ -1,8 +1,21 @@
+//! # 工具模块
+//! 提供一些通用的工具方法，包括:
+//! - 生成随机 id
+//! - 检查路径是否合法
+use crate::errors::IOError;
 use std::path::Path;
 use uuid::Uuid;
-use crate::errors::IOError;
 
 /// 生成随机 id
+///
+/// # Examples
+///
+/// ```rust
+/// use arui_core::utils::generate_id;
+/// let id = generate_id();
+///
+/// assert_eq!(id.len(), 36);
+/// ```
 pub fn generate_id() -> String {
     Uuid::new_v4().to_string()
 }
@@ -10,6 +23,18 @@ pub fn generate_id() -> String {
 /// 检查路径是否合法
 /// 接受一个路径参数，可以是绝对路径也可以是一个相对路径
 /// 若路径不存在则抛出错误 InvalidPath，存在则返回当前路径的绝对路径
+///
+/// # Examples
+///
+/// ```rust
+/// use arui_core::utils::check_path;
+///
+/// let valid = check_path('.');
+/// println!("{}", valid.unwrap());
+///
+/// let invalid = check_path("/not_exist");
+/// println!("{}", invalid.unwrap_err());
+/// ```
 pub fn check_path<S>(target: S) -> Result<String, IOError>
 where
     S: Into<String>,
@@ -38,7 +63,10 @@ mod tests {
         let valid_path = check_path("./src".to_string());
         assert!(valid_path.is_ok());
         // 获取当前启动命令时的绝对路径
-        let current_path = std::env::current_dir().unwrap().to_string_lossy().to_string();
+        let current_path = std::env::current_dir()
+            .unwrap()
+            .to_string_lossy()
+            .to_string();
         // current_path 拼接上 src 应该和 valid_path 相同
         assert_eq!(current_path + "/src", valid_path.unwrap());
         let invalid_path = check_path("/not_exist".to_string());

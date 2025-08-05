@@ -1,12 +1,15 @@
+//! # 项目树行为配置
+//! 通过设置配置字段，我们可以控制构建、分析等操作中的细节行为，比如排除符合某规则的路径、忽略某文件的总结信息。
 use derive_builder::Builder;
 
-/// 配置
+/// 项目树配置对象
+/// - `include` 需要包含的路径的规则
+/// - `eclude` 需要排除的路径的规则
 #[derive(Default, Debug, Builder, PartialEq, Clone)]
 #[builder(default, setter(into))]
 pub struct ProjectConfig {
     /// 需要包含的路径
     pub include: Vec<String>,
-
     /// 需要排除的路径
     pub exclude: Vec<String>,
 }
@@ -99,7 +102,9 @@ mod tests {
         println!("{:?}", config);
         assert_eq!(config.include.len(), 1);
         assert_eq!(config.exclude.len(), 2);
-        let config = config.add_include("123".to_string()).add_exclude("321".to_string());
+        let config = config
+            .add_include("123".to_string())
+            .add_exclude("321".to_string());
         println!("{:?}", config);
         assert_eq!(config.include.len(), 2);
         assert_eq!(config.exclude.len(), 3);

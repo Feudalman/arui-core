@@ -1,4 +1,4 @@
-//! 项目树根节点
+//! # 项目树入口
 //! 用于初始化操作和启动目录树分析
 use crate::tree::config::ProjectConfig;
 use crate::tree::node::TreeNode;

@@ -1,4 +1,4 @@
-/// 自定义错误
+//! 自定义错误模块
 
 use thiserror::Error;
 
