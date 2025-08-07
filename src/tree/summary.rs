@@ -11,14 +11,20 @@ use std::fmt::Display;
 
 #[derive(Debug, Clone)]
 /// 节点总结信息
+/// - size: 磁盘占用大小
+/// - count: 包含文本行数
+/// - updated_at: 最后更新时间
+/// - suffixes: 后缀
+///   - 文件：当前文件的后缀
+///   - 目录：当前目录下所有文件的后缀
 pub struct NodeSummary {
-    // 磁盘占用大小
+    /// u64 磁盘占用大小，默认为 0
     pub size: u64,
-    // 包含文本行数
+    /// u64 包含文本行数，默认为 0
     pub count: u64,
-    // 最后更新时间
+    /// 最后更新时间，若没有启动 `project_tree.summarize` 则为空
     pub updated_at: Option<std::time::SystemTime>,
-    // 包含的文件后缀
+    /// 包含的文件后缀，默认为空
     pub suffixes: Vec<String>,
 }
 
@@ -33,7 +39,12 @@ impl Display for NodeSummary {
 }
 
 impl NodeSummary {
-    /// 创建节点
+    /// 创建节点总结实例
+    /// 以默认值填充：
+    /// - size: 0
+    /// - count: 0
+    /// - updated_at: None
+    /// - suffixes: Vec::new
     pub fn new() -> Self {
         NodeSummary {
             size: 0,
@@ -43,26 +54,55 @@ impl NodeSummary {
         }
     }
 
-    /// 更新节点信息
-    /// 任意节点可以为文件，也可以为目录，所以我们需要对两种情况都做判断，并使用不同的分支处理
+    // 更新节点信息
+    // 任意节点可以为文件，也可以为目录，所以我们需要对两种情况都做判断，并使用不同的分支处理
+    //
+    // ### 文件
+    // 如果节点为文件，直接调用文件的总结函数然后赋值即可
+    //
+    // ### 目录
+    // 如果节点为目录，则需要递归的调用子节点的总结函数，由底向上调用总结信息，直到根节点
+    // 在每次发现节点是目录时，不对其调用总结函数，而是继续递归调用子节点的总结函数
+    // 直到最后子项遍历完毕，目录节点对子节点进行累加得到最终结果。
+    // ----------------- 以上注释为内部注释 -----------------
+    // ----------------- 以下注释为文档注释 -----------------
+    /// 更新节点的总结信息
+    /// - node：{&mut TreeNode} 节点实例
+    /// - return：{NodeSummary}
+    /// 该函数属于 `NodeSummary` 模块，不直接绑定于 `TreeNode`，即不直接修改 `TreeNode.summary`
+    /// 若有手动更新某节点信息的需求，则需要在调用该函数后手动赋值 `node.summary = summary;`
     ///
-    /// ### 文件
-    /// 如果节点为文件，直接调用文件的总结函数然后赋值即可
+    /// # Examples
     ///
-    /// ### 目录
-    /// 如果节点为目录，则需要递归的调用子节点的总结函数，由底向上调用总结信息，直到根节点
-    /// 在每次发现节点是目录时，不对其调用总结函数，而是继续递归调用子节点的总结函数
-    /// 直到最后子项遍历完毕，目录节点对子节点进行累加得到最终结果。
+    /// ```rust
+    /// use arui_core::tree::node::TreeNode;
+    /// use arui_core::tree::summary::NodeSummary;
+    ///
+    /// const base_url = "./tests/examples/tree/summary";
+    /// let mut node = TreeNode::new(base_url.to_String(), true);
+    /// let sub_node = TreeNode::new(base_url + "/test.rs", false);
+    /// node.children = Some(vec![sub_node]);
+    ///
+    /// let summary = NodeSummary::update(&mut node);
+    /// // 手动赋值！
+    /// node.summary = summary;
+    ///
+    /// assert_eq!(node.summary.size, 0);
+    /// assert_eq!(node.summary.count, 0);
+    /// ```
     pub fn update(node: &mut TreeNode) -> NodeSummary {
+        // 实例化节点总结对象
         let mut summary = NodeSummary::new();
         summary.updated_at = Some(std::time::SystemTime::now());
 
+        // 若非目录，直接计算当前文件，并终止递归
         if !node.is_dir {
             summary.size = get_file_size(&node.path).unwrap_or(0);
             summary.count = get_file_count(&node.path).unwrap_or(0);
             return summary;
         }
 
+        // 若为目录，递归遍历所有子节点，从底向上获取总结信息，直到根节点
         if let Some(children) = &mut node.children {
             for child in children {
                 // 递归调用子节点

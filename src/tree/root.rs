@@ -10,11 +10,16 @@ use std::path::{Path, PathBuf};
 /// 项目目录树根节点
 /// 用于初始化操作和启动目录树分析
 pub struct ProjectTree {
-    pub id: String,                    // 项目id
-    pub name: String,                  // 别名
-    pub path: String,                  // 根路径
-    pub root: Option<TreeNode>,        // 根节点
-    pub config: Option<ProjectConfig>, // 配置
+    /// 项目 ID，自动生成
+    pub id: String,
+    /// 项目别名，自定义
+    pub name: String,
+    /// 项目根路径，自定义
+    pub path: String,
+    /// 根节点，在 `build` 方法中生成，作为整个项目树迭代入口
+    pub root: Option<TreeNode>,
+    /// 项目树迭代配置，用于过滤、仅包含等等
+    pub config: Option<ProjectConfig>,
 }
 
 /// 初始化项目及构建属性
@@ -152,6 +157,18 @@ impl ProjectTree {
 
     // ------------------------- 生成总结信息 -------------------------
 
+    /// 生成项目树的总结信息
+    /// 从 `root` 启动，遍历并生成项目树各节点的总结信息
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use arui_core::tree::root::ProjectTree;
+    /// let mut project = ProjectTree::new("test", "./src", None);
+    /// project.build().unwrap();
+    /// project.summarize().unwrap();
+    /// println!("{}", project.root.as_ref().unwrap());
+    /// ```
     pub fn summarize(&mut self) -> Result<()> {
         // 如果根节点不存在，返回错误
         if self.root.is_none() {
