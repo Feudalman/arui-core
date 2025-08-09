@@ -6,22 +6,33 @@ use std::fmt::{Display, Formatter};
 
 // --------------------- visible trait ---------------------
 
+/// 项目树可视化
+/// - show：列出项目基础信息
+/// - print_tree：打印整个树结构
+/// - print_node：递归打印节点
 pub trait ProjectTreeVisible {
-    /// 列出项目根节点信息：
-    /// ID： 项目根节点的唯一标识
-    /// Valid：是否为有效树，即树结构存在于目标路径下
-    /// Name： 项目名
-    /// Path： 项目根路径
     fn show(&self);
-    /// 打印整个树结构
     fn print_tree(&self);
-    /// 递归打印节点
     fn print_node(node: &TreeNode, depth: usize);
 }
 
 // --------------------- ProjectTreeVisible ---------------------
 
 impl ProjectTreeVisible for ProjectTree {
+    /// 列出项目根节点信息：
+    /// - ID： 项目根节点的唯一标识
+    /// - Valid：是否为有效树，即树结构存在于目标路径下
+    /// - Name： 项目名
+    /// - Path： 项目根路径
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use arui_core::tree::root::ProjectTree;
+    /// use arui_core::tree::visible::ProjectTreeVisible;
+    /// let tree = ProjectTree::new("test", ".", None);
+    /// tree.show();
+    /// ```
     fn show(&self) {
         println!("Project Tree:");
         println!("ID: {}", self.id);
@@ -30,6 +41,7 @@ impl ProjectTreeVisible for ProjectTree {
         println!("Path: {}", self.path);
     }
 
+    /// 打印整个树结构
     fn print_tree(&self) {
         if let Some(ref root) = self.root {
             Self::print_node(root, 0);
@@ -38,6 +50,7 @@ impl ProjectTreeVisible for ProjectTree {
         }
     }
 
+    /// 递归打印节点
     fn print_node(node: &TreeNode, depth: usize) {
         // 根据深度缩进
         let indent = "  ".repeat(depth);
