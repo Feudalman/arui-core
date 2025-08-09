@@ -67,10 +67,11 @@ impl NodeSummary {
     // ----------------- 以上注释为内部注释 -----------------
     // ----------------- 以下注释为文档注释 -----------------
     /// 更新节点的总结信息
-    /// - node：{&mut TreeNode} 节点实例
+    /// - node：{&mut TreeNode} 可变节点实例
     /// - return：{NodeSummary}
     /// 该函数属于 `NodeSummary` 模块，不直接绑定于 `TreeNode`，即不直接修改 `TreeNode.summary`
     /// 若有手动更新某节点信息的需求，则需要在调用该函数后手动赋值 `node.summary = summary;`
+    /// 但在某节点的 `update` 过程中，子节点的 `summary` 会自动赋值，无需手动处理，最终返回的总结信息为当前启动节点的总结信息
     ///
     /// # Examples
     ///
@@ -78,17 +79,17 @@ impl NodeSummary {
     /// use arui_core::tree::node::TreeNode;
     /// use arui_core::tree::summary::NodeSummary;
     ///
-    /// const base_url = "./tests/examples/tree/summary";
-    /// let mut node = TreeNode::new(base_url.to_String(), true);
-    /// let sub_node = TreeNode::new(base_url + "/test.rs", false);
+    /// const BASE_URL: &str = "./tests/examples/tree/summary";
+    /// let mut node = TreeNode::new(BASE_URL, true);
+    /// let sub_node = TreeNode::new(format!("{}/test.rs", BASE_URL), false);
     /// node.children = Some(vec![sub_node]);
     ///
     /// let summary = NodeSummary::update(&mut node);
     /// // 手动赋值！
     /// node.summary = summary;
     ///
-    /// assert_eq!(node.summary.size, 0);
-    /// assert_eq!(node.summary.count, 0);
+    /// assert_eq!(node.summary.size > 0, true);
+    /// assert_eq!(node.summary.count > 0, true);
     /// ```
     pub fn update(node: &mut TreeNode) -> NodeSummary {
         // 实例化节点总结对象
@@ -113,7 +114,6 @@ impl NodeSummary {
                 // 累加到父节点
                 summary.size += child_summary.size;
                 summary.count += child_summary.count;
-                // 如果需要合并 suffixes，可加上这行：
                 // summary.suffixes.extend(child_summary.suffixes.clone());
             }
         }
