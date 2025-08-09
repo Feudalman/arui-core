@@ -1,7 +1,18 @@
 [package]
 name = "arui-core"
-version = "0.1.0"
+description = "A project tree analyzer for code metrics and file system statistics"
+version = "0.0.1"
+authors = ["Feudalman <feuclalman@gmail.com>"]
 edition = "2024"
+license = "MIT"
+repository = "https://github.com/Feudalman/arui-core"
+readme = "README.md"
+keywords = ["project", "tree", "analyzer", "code", "metrics"]
+categories = [
+  "development-tools",
+  "development-tools::profiling",
+  "filesystem"
+]
 
 [dependencies]
 thiserror = "2.0.12"

@@ -9,6 +9,17 @@
 //! - [ ] 提供更多总结信息的获取
 #![allow(dead_code)]
 
+/// 项目配置相关
+pub use tree::config::ProjectConfig;
+/// 项目树节点相关
+pub use tree::node::TreeNode;
+/// 项目树与公开 API
+pub use tree::root::ProjectTree;
+/// 项目树节点总结信息相关
+pub use tree::summary::NodeSummary;
+/// 项目树可视化
+pub use tree::visible::ProjectTreeVisible;
+
 pub mod errors;
 pub mod tree;
 pub mod utils;
