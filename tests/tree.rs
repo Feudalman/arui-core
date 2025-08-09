@@ -1,6 +1,6 @@
 //! 测试 `tree` 模块的基础使用
 //! 并不包含错误、配置等测试，因为此处仅测试 `tree` 模块的基础 API 在正常情况下的行为
-use arui_core::tree::{root::ProjectTree, visible::ProjectTreeVisible};
+use arui_core::{ProjectTree, ProjectTreeVisible};
 
 #[test]
 /// 测试创建项目，并分步构建项目树、获取总结信息
